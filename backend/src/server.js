@@ -19,14 +19,14 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ENV.CLIENT_URL, // ⚠️ make sure this is your Vercel URL
+    origin: ENV.CLIENT_URL, // ⚠️ put your Vercel URL here
     credentials: true,
   })
 );
 
 app.use(clerkMiddleware());
 
-// ✅ Routes
+// ✅ API Routes
 app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/chat", chatRoutes);
 app.use("/api/sessions", sessionRoutes);
@@ -36,24 +36,24 @@ app.get("/health", (req, res) => {
   res.status(200).json({ msg: "API is up and running 🚀" });
 });
 
-// ✅ Root route (important for testing)
+// ✅ Root route (for testing)
 app.get("/", (req, res) => {
   res.send("Backend running 🚀");
 });
 
-// ✅ Serve frontend (only in production)
+// ✅ Serve frontend (ONLY in production)
 if (ENV.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  // ❗ FIXED (important)
-  app.get("*", (req, res) => {
+  // 🔥 FINAL FIX (NO wildcard error)
+  app.use((req, res) => {
     res.sendFile(
       path.join(__dirname, "../frontend", "dist", "index.html")
     );
   });
 }
 
-// ✅ Start server (FIXED PORT)
+// ✅ Start server (Render-safe PORT)
 const startServer = async () => {
   try {
     await connectDB();
