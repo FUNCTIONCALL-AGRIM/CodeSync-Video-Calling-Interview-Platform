@@ -39,9 +39,11 @@ function SessionPage() {
   // 🔥 FIXED AUTO JOIN (NO LOOP)
   useEffect(() => {
     if (!session || !user || loadingSession) return;
+      const isHostNow = session.host?.clerkId === user.id;
+  const isParticipantNow = session.participant?.clerkId === user.id;
 
     // already in session → STOP
-    if (isHost || isParticipant) return;
+  if (isHostNow || isParticipantNow) return;
 
     // session already full → STOP
     if (session.participant) return;
@@ -50,7 +52,7 @@ function SessionPage() {
     if (joinSessionMutation.isPending) return;
 
     joinSessionMutation.mutate(id);
-  }, [session, user, loadingSession, id]);
+  }, [session, user, loadingSession, id,joinSessionMutation]);
 
   // 🔥 SAFE REDIRECT
   useEffect(() => {
